@@ -3,6 +3,8 @@ import time
 import random
 import cv2
 import numpy as np
+import win32api
+import win32con
 
 # 全局控制变量
 running = True
@@ -54,3 +56,32 @@ def clear_and_type(text):
         time.sleep(0.15)
     pyautogui.typewrite(text, interval=0.12)
     time.sleep(0.3)
+
+def drag_in_game(start_x1, start_y1, start_x2, start_y2, duration=0.5):
+    """
+    在游戏窗口中模拟拖动操作，兼容 DirectX 渲染界面
+    start_x1, start_y1: 起始坐标
+    start_x2, start_y2: 目标坐标
+    duration: 拖动时间
+    """
+    steps = 30
+    dx = (start_x2 - start_x1) / steps
+    dy = (start_y2 - start_y1) / steps
+    delay = duration / steps
+
+    # 按下鼠标左键
+    win32api.SetCursorPos((start_x1, start_y1))
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
+    time.sleep(0.05)
+
+    # 平滑移动
+    for i in range(steps):
+        nx = int(start_x1 + dx * i)
+        ny = int(start_y1 + dy * i)
+        win32api.SetCursorPos((nx, ny))
+        time.sleep(delay)
+
+    # 松开鼠标左键
+    win32api.SetCursorPos((start_x2, start_y2))
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+    print(f"[INFO] 拖动完成：({start_x1},{start_y1}) -> ({start_x2},{start_y2})")
