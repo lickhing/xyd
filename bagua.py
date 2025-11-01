@@ -4,7 +4,7 @@ from utils import click_image, clear_and_type, wait_with_interrupt, running
 
 first_run = True  # 是否第一次八卦
 
-def find_bagua_npc():
+def find_bagua_npc(daboss_wait_time=30):
     global running, first_run
     print("[INFO] 开始寻找八卦NPC...")
 
@@ -100,7 +100,7 @@ def find_bagua_npc():
             # 阶段4：打Boss
             pyautogui.press('b')
             print("[INFO] 按B打Boss")
-            wait_with_interrupt(30)
+            wait_with_interrupt(daboss_wait_time)
             pyautogui.press('n')
             print("[INFO] 按N给经验")
             click_image("picture/npc_zhennei.png")
