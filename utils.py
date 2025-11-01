@@ -33,11 +33,14 @@ def click_image(img_path, threshold=0.8, delay=0.5):
             y += h // 2 + random.randint(-2, 2)
             pyautogui.moveTo(x, y, duration=0.2)
             pyautogui.click()
-            wait_with_interrupt(delay)
-            # 移动鼠标到安全位置
+            wait_with_interrupt(delay)  # 原有延迟保留
+            # ---------------------- 新增全局动作 ----------------------
+            # 鼠标移到安全位置
             screen_width, screen_height = pyautogui.size()
             pyautogui.moveTo(50, screen_height - 50, duration=0.2)
-            wait_with_interrupt(0.3)
+            # 给慢电脑反应时间，1秒延迟
+            time.sleep(0.5)
+            # ---------------------------------------------------------
             return True
     except Exception as e:
         print(f"[ERROR] click_image异常: {e}")
@@ -45,12 +48,9 @@ def click_image(img_path, threshold=0.8, delay=0.5):
 
 def clear_and_type(text):
     """点击后清空输入框并输入新内容"""
-    # 等待焦点稳定
-    time.sleep(0.3)
-    # 按5次Backspace清空
+    time.sleep(0.3)  # 等待焦点稳定
     for _ in range(5):
         pyautogui.press('backspace')
         time.sleep(0.15)
-    # 输入新内容，每个字符间隔0.12秒
     pyautogui.typewrite(text, interval=0.12)
     time.sleep(0.3)
