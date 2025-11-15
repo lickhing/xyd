@@ -2,12 +2,17 @@ import pyautogui
 import time
 from utils import click_image, clear_and_type, wait_with_interrupt, running
 
-first_run = True  # 是否第一次天牢
+first_run = True
 
 
 def tianlao():
-    global first_run, running
+    global first_run
     print("[INFO] 天牢流程启动...")
+
+    if not running:
+        return
+
+    pyautogui.press('b')
 
     while running:
         # ---------- 阶段1：天牢入口寻路 ----------
@@ -20,7 +25,8 @@ def tianlao():
                 else:
                     pyautogui.press('f12')
                     print("[INFO] F12 打开地图")
-                    wait_with_interrupt(0.5)
+                    if not wait_with_interrupt(0.5):
+                        return
                     click_image("picture/xunren.png")
                     print("[INFO] 点击 xunren.png")
 
@@ -30,21 +36,25 @@ def tianlao():
                     clear_and_type("268")
                 if click_image("picture/zizhuyidong.png"):
                     print("[INFO] 开始自动寻路到天牢入口")
-                    wait_with_interrupt(20)
+                    if not wait_with_interrupt(20):
+                        return
 
                 if click_image("picture/tl_wlss.png"):
                     print("[INFO] 点击 tl_wlss.png")
-                    wait_with_interrupt(1)
+                    if not wait_with_interrupt(1):
+                        return
                     if click_image("picture/tl_jrtl.png"):
                         print("[INFO] 点击 tl_jrtl.png，确认进入天牢")
-                        wait_with_interrupt(1)
-                        # 检查今日是否完成天牢
+                        if not wait_with_interrupt(1):
+                            return
                         if click_image("picture/tl_tlwc.png"):
                             print("[INFO] 今日天牢已完成，进入金币领奖阶段")
-                            wait_with_interrupt(1)
+                            if not wait_with_interrupt(1):
+                                return
                             if click_image("picture/tl_zdl.png"):
                                 print("[INFO] 点击 tl_zdl.png 进入金币领奖")
-                                wait_with_interrupt(1)
+                                if not wait_with_interrupt(1):
+                                    return
                                 go_receive_reward_jinbi()
                                 return
                         break
@@ -61,26 +71,35 @@ def tianlao():
                             retry_count = 0
                     else:
                         print(f"[INFO] 未找到 tl_wlss.png，等待5秒重试 ({retry_count}/3)")
-                        wait_with_interrupt(5)
+                        if not wait_with_interrupt(5):
+                            return
         else:
             print("[INFO] 非第一次天牢，跳过寻路阶段")
             if click_image("picture/tl_npc_wai.png"):
                 print("[INFO] 点击 tl_npc_wai.png")
-                wait_with_interrupt(1)
+                if not wait_with_interrupt(1):
+                    return
                 if click_image("picture/tl_wlss.png"):
                     print("[INFO] 点击 tl_wlss.png")
-                    wait_with_interrupt(1)
+                    if not wait_with_interrupt(1):
+                        return
                     if click_image("picture/tl_jrtl.png"):
                         print("[INFO] 点击 tl_jrtl.png，进入天牢")
-                        wait_with_interrupt(1)
+                        if not wait_with_interrupt(1):
+                            return
                         if click_image("picture/tl_tlwc.png"):
                             print("[INFO] 今日天牢已完成，进入金币领奖阶段")
-                            wait_with_interrupt(1)
+                            if not wait_with_interrupt(1):
+                                return
                             if click_image("picture/tl_zdl.png"):
                                 print("[INFO] 点击 tl_zdl.png 进入金币领奖")
-                                wait_with_interrupt(1)
+                                if not wait_with_interrupt(1):
+                                    return
                                 go_receive_reward_jinbi()
                                 return
+
+        if not running:
+            return
 
         first_run = False
 
@@ -88,7 +107,8 @@ def tianlao():
         print("[INFO] 开始战斗阶段")
         if click_image("picture/tl_zdl.png"):
             print("[INFO] 点击 tl_zdl.png 开始战斗")
-            wait_with_interrupt(1)
+            if not wait_with_interrupt(1):
+                return
 
         # 移动到战斗坐标
         if click_image("picture/xunren.png"):
@@ -96,7 +116,8 @@ def tianlao():
         else:
             pyautogui.press('f12')
             print("[INFO] F12 打开地图")
-            wait_with_interrupt(0.5)
+            if not wait_with_interrupt(0.5):
+                return
             click_image("picture/xunren.png")
             print("[INFO] 点击 xunren.png")
         if click_image("picture/zuobiao_x.png"):
@@ -105,13 +126,15 @@ def tianlao():
             clear_and_type("10")
         if click_image("picture/zizhuyidong.png"):
             print("[INFO] 自动移动到战斗坐标")
-            wait_with_interrupt(1)
+            if not wait_with_interrupt(1):
+                return
 
         # 等待Boss死亡
         while running:
             if click_image("picture/tl_npc.png"):
                 print("[INFO] 检测到 tl_npc.png，Boss死亡")
-                wait_with_interrupt(0.5)
+                if not wait_with_interrupt(0.5):
+                    return
                 if click_image("picture/tl_bossdead.png"):
                     print("[INFO] 点击 tl_bossdead.png")
                     wait_with_interrupt(0.5)
@@ -119,40 +142,50 @@ def tianlao():
                     print("[INFO] 点击 tl_bossdead2.png")
                     wait_with_interrupt(0.5)
                 break
-            wait_with_interrupt(0.5)
+            if not wait_with_interrupt(0.5):
+                return
 
-        wait_with_interrupt(5)  # 拾取掉落物
+        if not wait_with_interrupt(5):
+            return
+
         while running:
             if click_image("picture/tl_sqwc.png"):
                 print("[INFO] 点击 tl_sqwc.png 拾取完成")
-                wait_with_interrupt(1)
+                if not wait_with_interrupt(1):
+                    return
             if click_image("picture/tl_npc.png"):
                 print("[INFO] 点击下一层 NPC tl_npc.png")
-                wait_with_interrupt(1)
+                if not wait_with_interrupt(1):
+                    return
             if click_image("picture/tl_queren.png"):
                 print("[INFO] 点击 tl_queren.png 进入下一层")
-                wait_with_interrupt(1)
-                break  # 回到循环开始进行下一层
+                if not wait_with_interrupt(1):
+                    return
+                break
             elif click_image("picture/tl_huijc.png"):
                 print("[INFO] 天牢完成一轮，进行玉石领奖")
-                wait_with_interrupt(1)
+                if not wait_with_interrupt(1):
+                    return
                 go_receive_reward_yushi()
-                break  # 领奖完成后自动进入下一轮
+                break
+            if not wait_with_interrupt(1):
+                return
 
-        # 等待1秒再进行下一轮
-        wait_with_interrupt(1)
+        if not wait_with_interrupt(1):
+            return
 
 
-# ---------- 阶段4：天牢完成一轮后的玉石领奖 ----------
 def go_receive_reward_yushi():
     retry_count = 0
-    while retry_count < 3:
+    while retry_count < 3 and running:
         if click_image("picture/tl_npc_wai.png"):
             print("[INFO] 点击领奖 NPC tl_npc_wai.png")
-            wait_with_interrupt(1)
+            if not wait_with_interrupt(1):
+                return
             if click_image("picture/tl_lqjl.png"):
                 print("[INFO] 点击领取奖励 tl_lqjl.png")
-                wait_with_interrupt(1)
+                if not wait_with_interrupt(1):
+                    return
                 if click_image("picture/tl_queren.png"):
                     print("[INFO] 点击 tl_queren.png 确认奖励")
                     wait_with_interrupt(1)
@@ -160,11 +193,11 @@ def go_receive_reward_yushi():
         else:
             retry_count += 1
             print(f"[INFO] 第 {retry_count} 次领奖未找到 NPC，等待5秒重试")
-            wait_with_interrupt(5)
+            if not wait_with_interrupt(5):
+                return
     print("[WARN] 玉石领奖未成功，继续下一轮天牢")
 
 
-# ---------- 阶段5：当天所有天牢完成后的金币领奖 ----------
 def go_receive_reward_jinbi():
     print("[INFO] 开始金币领奖阶段")
     if click_image("picture/xunren.png"):
@@ -172,7 +205,8 @@ def go_receive_reward_jinbi():
     else:
         pyautogui.press('f12')
         print("[INFO] F12 打开地图")
-        wait_with_interrupt(0.5)
+        if not wait_with_interrupt(0.5):
+            return
         click_image("picture/xunren.png")
         print("[INFO] 点击 xunren.png")
 
@@ -182,26 +216,30 @@ def go_receive_reward_jinbi():
         clear_and_type("239")
     if click_image("picture/zizhuyidong.png"):
         print("[INFO] 自动移动到金币领奖坐标")
-        wait_with_interrupt(15)
+        if not wait_with_interrupt(15):
+            return
 
     retry_count = 0
-    while retry_count < 3:
+    while retry_count < 3 and running:
         if click_image("picture/tl_xyy.png"):
             print("[INFO] 点击 tl_xyy.png")
-            wait_with_interrupt(1)
+            if not wait_with_interrupt(1):
+                return
             if click_image("picture/tllingjiang.png"):
                 print("[INFO] 点击 tllingjiang.png")
-                wait_with_interrupt(1)
+                if not wait_with_interrupt(1):
+                    return
             return
         else:
             retry_count += 1
             print(f"[INFO] 未找到 tl_xyy.png，等待5秒重试 ({retry_count}/3)")
-            wait_with_interrupt(5)
+            if not wait_with_interrupt(5):
+                return
 
-    # 最后重试未成功，检测npc_lingjiang.png
-    if click_image("picture/npc_lingjiang.png"):
+    if click_image("picture/npc_lingjiang.png") and running:
         print("[INFO] 点击 npc_lingjiang.png")
-        wait_with_interrupt(1)
+        if not wait_with_interrupt(1):
+            return
         if click_image("picture/tl_xyy.png"):
             click_image("picture/tllingjiang.png")
             print("[INFO] 金币领奖完成")
